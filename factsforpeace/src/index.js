@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css'; // If you have CSS
+//import './index.css'; // If you have CSS
 import App from './App';
 
 
