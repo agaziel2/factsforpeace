@@ -1,6 +1,15 @@
 const PDFDocument = require('pdfkit');
 const { createSVG, createImageFromSVG } = require('./svgCreator.js'); 
+const QRCode = require('qrcode');
 
+async function createQRCode(url) {
+  try {
+    return await QRCode.toDataURL(url);
+  } catch (error) {
+    console.error('Error generating QR Code:', error);
+    return null;
+  }
+}
 exports.handler = async (event) => {
   try {
     console.log("Received data:", event.body);
@@ -23,11 +32,17 @@ exports.handler = async (event) => {
   }
 };
 
-
- function createPDF(theme, fact) {
-  return new Promise((resolve, reject) => {
+function createPDF(theme, fact) {
+  return new Promise(async (resolve, reject) => {
     const doc = new PDFDocument();
     let buffers = [];
+
+    // Generate QR Code
+    const qrCodeImage = await createQRCode('https://rentfaktisk.dk');
+    if (!qrCodeImage) {
+      reject('Failed to generate QR Code');
+      return;
+    }
 
     doc.on('data', buffers.push.bind(buffers));
     doc.on('end', () => {
@@ -35,6 +50,7 @@ exports.handler = async (event) => {
       resolve(pdfData.toString('base64'));
     });
     doc.on('error', reject);
+
 
     // Adding Background Elements
     doc.fontSize(200).opacity(0.1).font('Helvetica').text('?', 100, 150);
@@ -54,6 +70,8 @@ exports.handler = async (event) => {
 
     // Optional: Add a footer or additional info here
     // doc.fontSize(12).text('Additional Information', { align: 'center' });
+    doc.image(qrCodeImage, 490, 680, { width: 100 });
+    doc.fontSize(10).font('Helvetica').text('Scan for more information', 490, 800, { width: 100, align: 'center' });
 
     doc.end();
   });
