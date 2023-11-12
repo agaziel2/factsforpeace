@@ -24,7 +24,7 @@ exports.handler = async (event) => {
 };
 
 
- ffunction createPDF(theme, fact) {
+ function createPDF(theme, fact) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument();
     let buffers = [];
