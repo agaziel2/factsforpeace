@@ -105,8 +105,8 @@ function TranslationForm({ data, onSubmit }) {
   useEffect(() => {
     setTranslations(data.map(item => ({
       ...item,
-      translatedTheme: item.Themes || '',
-      translatedFact: item.Facts || '',
+      translatedTheme: item.Theme || '',
+      translatedFact: item.Fact || '',
       pdfData: null,
       pdfFileName: '',
       isEdited: false  // Add isEdited flag
@@ -137,8 +137,8 @@ function TranslationForm({ data, onSubmit }) {
   const handleSubmit = async (index, theme, fact) => {
     const item = translations[index];
     const payload = {
-      theme: item.isEdited ? theme : item.Theme,
-      fact: item.isEdited ? fact : item.Fact,
+      theme: item.isEdited ? theme : item.Themes,
+      fact: item.isEdited ? fact : item.Facts,
       title
     };
     const response = await onSubmit([payload]);
