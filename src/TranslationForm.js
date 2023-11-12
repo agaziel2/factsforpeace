@@ -42,11 +42,9 @@ function TranslationForm({ data, onSubmit }) {
       console.log("Received PDF filename:", translatedData[0].theme);
       console.log("PDF Generated Successfully");
     }
-  };
+  //};
   
   
-
-
   return (
     <div>
     <form onSubmit={handleSubmit}>
