@@ -12,7 +12,7 @@ function TranslationForm({ data, onSubmit }) {
     const updatedTranslations = [...translations];
     updatedTranslations[index][field] = value;
     setTranslations(updatedTranslations);
-  };  s
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
