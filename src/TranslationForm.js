@@ -105,8 +105,8 @@ function TranslationForm({ data, onSubmit }) {
   useEffect(() => {
     setTranslations(data.map(item => ({
       ...item,
-      translatedTheme: item.Theme || '',
-      translatedFact: item.Fact || '',
+      translatedTheme: item.Themes || '',
+      translatedFact: item.Facts || '',
       pdfData: null,
       pdfFileName: '',
       isEdited: false  // Add isEdited flag
