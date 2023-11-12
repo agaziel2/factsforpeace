@@ -1,5 +1,4 @@
 const PDFDocument = require('pdfkit');
-const { createSVG, createImageFromSVG } = require('./svgCreator.js'); 
 const QRCode = require('qrcode');
 
 async function createQRCode(url) {
@@ -10,6 +9,7 @@ async function createQRCode(url) {
     return null;
   }
 }
+
 exports.handler = async (event) => {
   try {
     console.log("Received data:", event.body);
@@ -17,7 +17,7 @@ exports.handler = async (event) => {
     console.log("Parsed items:", items);
 
     const results = await Promise.all(items.map(async (item) => {
-      return await createPDF(item.theme, item.fact); // Always creating a PDF
+      return await createPDF(item.theme, item.fact, item.title); // Pass the title to createPDF
     }));
 
     return {
@@ -32,7 +32,7 @@ exports.handler = async (event) => {
   }
 };
 
-function createPDF(theme, fact) {
+function createPDF(theme, fact, title) { // Include title in the function parameters
   return new Promise(async (resolve, reject) => {
     const doc = new PDFDocument();
     let buffers = [];
@@ -51,32 +51,21 @@ function createPDF(theme, fact) {
     });
     doc.on('error', reject);
 
+    // Title with Question Mark Background
+    doc.fontSize(36).font('Helvetica-Bold').fillColor('#CCCCCC').text('?', 0, 40, { align: 'center' });
+    doc.fillColor('black').text(title, { align: 'center' });
 
-    // Adding Background Elements
-    doc.fontSize(200).opacity(0.1).font('Helvetica').text('?', 100, 150);
-    doc.fontSize(200).opacity(0.1).font('Helvetica').text('?', 400, 300);
-    doc.opacity(1); // Reset opacity for main text
+    // Theme (aligned left)
+    doc.moveDown(2).fontSize(30).font('Helvetica').text(`Theme: ${theme}`, 50);
 
-    // Layout and Design for Text
-    doc.fontSize(30).font('Helvetica-Bold').text(theme, {
-      align: 'center',
-      underline: true,
-      continued: true,
-    });
-    doc.moveDown(0.5);
-    doc.fontSize(24).font('Helvetica').text(fact, {
-      align: 'center',
-    });
+    // Fact with Exclamation Mark Background
+    doc.moveDown().fontSize(30).font('Helvetica').fillColor('#CCCCCC').text('!', 0, doc.y + 20, { align: 'center' });
+    doc.fillColor('black').text(`Fact: ${fact}`, 50, doc.y, { align: 'left' });
 
-    // Optional: Add a footer or additional info here
-    // doc.fontSize(12).text('Additional Information', { align: 'center' });
+    // Add QR Code in Footer
     doc.image(qrCodeImage, 490, 680, { width: 100 });
     doc.fontSize(10).font('Helvetica').text('Scan for more information', 490, 800, { width: 100, align: 'center' });
 
     doc.end();
   });
 }
-
-
-
-

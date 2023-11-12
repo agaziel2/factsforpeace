@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 function TranslationForm({ data, onSubmit }) {
   const [translations, setTranslations] = useState([]);
+  const [title, setTitle] = useState('');
 
   useEffect(() => {
     setTranslations(data.map(item => ({ ...item, translatedTheme: '', translatedFact: '', pdfData: null, pdfFileName: '' })));
@@ -11,6 +12,10 @@ function TranslationForm({ data, onSubmit }) {
     const updatedTranslations = [...translations];
     updatedTranslations[index][field] = value;
     setTranslations(updatedTranslations);
+  };
+
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
   };
 
   const handleDownload = (pdfData, pdfFileName) => {
@@ -24,7 +29,12 @@ function TranslationForm({ data, onSubmit }) {
   };
 
   const handleSubmit = async (index, theme, fact) => {
-    const response = await onSubmit([{ theme, fact }]);
+    const payload = {
+      theme, 
+      fact, 
+      title // Add the title to the payload
+    };
+    const response = await onSubmit([payload]);
     if (response && response.data && response.data.data && response.data.data.length > 0) {
       const updatedTranslations = [...translations];
       updatedTranslations[index].pdfData = response.data.data[0];
@@ -36,6 +46,12 @@ function TranslationForm({ data, onSubmit }) {
 
   return (
     <div>
+      <input
+        type="text"
+        placeholder="Enter title for PDF"
+        value={title}
+        onChange={handleTitleChange}
+      />
       <table>
         <thead>
           <tr>
