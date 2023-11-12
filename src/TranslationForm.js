@@ -100,24 +100,23 @@ import React, { useState, useEffect } from 'react';
 
 function TranslationForm({ data, onSubmit }) {
   const [translations, setTranslations] = useState([]);
-  const [originalTranslations, setOriginalTranslations] = useState([]);
   const [title, setTitle] = useState('');
 
   useEffect(() => {
-    // Store original data from CSV upload and initialize editable translations
-    setOriginalTranslations(data);
     setTranslations(data.map(item => ({
       ...item,
       translatedTheme: item.Theme || '',
       translatedFact: item.Fact || '',
       pdfData: null,
-      pdfFileName: ''
+      pdfFileName: '',
+      isEdited: false  // Add isEdited flag
     })));
   }, [data]);
 
   const handleTranslationChange = (index, field, value) => {
     const updatedTranslations = [...translations];
     updatedTranslations[index][field] = value;
+    updatedTranslations[index].isEdited = true;  // Set isEdited to true on edit
     setTranslations(updatedTranslations);
   };
 
@@ -136,10 +135,10 @@ function TranslationForm({ data, onSubmit }) {
   };
 
   const handleSubmit = async (index, theme, fact) => {
-    const original = originalTranslations[index];
+    const item = translations[index];
     const payload = {
-      theme: theme !== original.translatedTheme ? theme : original.Theme,
-      fact: fact !== original.translatedFact ? fact : original.Fact,
+      theme: item.isEdited ? theme : item.Theme,
+      fact: item.isEdited ? fact : item.Fact,
       title
     };
     const response = await onSubmit([payload]);
@@ -164,8 +163,8 @@ function TranslationForm({ data, onSubmit }) {
           <tr>
             <th>Theme</th>
             <th>Fact</th>
-            <th>Translated Theme</th>
-            <th>Translated Fact</th>
+            <th>Edit/Translate Theme</th>
+            <th>Edit/Translate Fact</th>
             <th>Actions</th>
           </tr>
         </thead>
