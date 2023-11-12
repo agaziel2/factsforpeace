@@ -12,12 +12,18 @@ function TranslationForm({ data, onSubmit }) {
     const updatedTranslations = [...translations];
     updatedTranslations[index][field] = value;
     setTranslations(updatedTranslations);
-  };
+  };  s
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(translations);
-  };
+    // Extract only the translated data
+    const translatedData = translations.map(item => ({
+        theme: item.translatedTheme, // Assuming the backend expects 'theme'
+        fact: item.translatedFact   // Assuming the backend expects 'fact'
+    }));
+    onSubmit(translatedData);
+};
+
 
   return (
     <form onSubmit={handleSubmit}>
