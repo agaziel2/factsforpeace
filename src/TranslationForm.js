@@ -33,12 +33,13 @@ function TranslationForm({ data, onSubmit }) {
       fact: item.translatedFact
     }));
     const response = await onSubmit(translatedData);
-    if (response && response.data && response.data.length > 0) {
-      setPdfData(response.data[0]); // Assuming the first item contains the PDF data
-      setPdfFileName(translatedData[0].theme); // Use the first translated theme as the file name
+    if (response && response.data) {
+      setPdfData(response.data); // Directly use response.data if it's not an array
+      setPdfFileName(translatedData[0].theme);
       console.log("PDF Generated Successfully");
     }
   };
+  
   
 
 
