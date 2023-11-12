@@ -32,10 +32,13 @@ exports.handler = async (event) => {
     doc.on('data', buffers.push.bind(buffers));
     doc.on('end', () => {
       const pdfData = Buffer.concat(buffers);
+      console.log(`PDF Generated for Theme: ${theme}`);
       resolve(pdfData.toString('base64'));
     });
-    doc.on('error', reject);
-
+    doc.on('error', (error) => {
+      console.error('Error generating PDF:', error);
+      reject(error);
+    });
     // Hardcoded title
     const title = "Your Hardcoded Title";
 
