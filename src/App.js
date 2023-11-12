@@ -20,10 +20,12 @@ function App() {
       
       // Handle the response
       console.log(response.data);
+      return response; // Return the response for the TranslationForm to use
     } catch (error) {
       console.error('Error generating poster:', error);
     }
   };
+  
 
   return (
     <div className="App">
