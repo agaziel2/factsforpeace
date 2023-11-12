@@ -24,7 +24,7 @@ exports.handler = async (event) => {
 };
 
 
- function createPDF(theme, fact) {
+ ffunction createPDF(theme, fact) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument();
     let buffers = [];
@@ -32,24 +32,33 @@ exports.handler = async (event) => {
     doc.on('data', buffers.push.bind(buffers));
     doc.on('end', () => {
       const pdfData = Buffer.concat(buffers);
-      console.log(`PDF Generated for Theme: ${theme}`);
       resolve(pdfData.toString('base64'));
     });
-    doc.on('error', (error) => {
-      console.error('Error generating PDF:', error);
-      reject(error);
-    });
-    // Hardcoded title
-    const title = "Your Hardcoded Title";
+    doc.on('error', reject);
 
-    doc.fillColor('black').fontSize(20).text(title, 10, 30);
-    // You can adjust the positioning and styling as needed
-    doc.fillColor('black').fontSize(16).text(`Theme: ${theme}`, 10, 60);
-    doc.fillColor('black').fontSize(16).text(`Fact: ${fact}`, 10, 90);
+    // Adding Background Elements
+    doc.fontSize(200).opacity(0.1).font('Helvetica').text('?', 100, 150);
+    doc.fontSize(200).opacity(0.1).font('Helvetica').text('?', 400, 300);
+    doc.opacity(1); // Reset opacity for main text
+
+    // Layout and Design for Text
+    doc.fontSize(30).font('Helvetica-Bold').text(theme, {
+      align: 'center',
+      underline: true,
+      continued: true,
+    });
+    doc.moveDown(0.5);
+    doc.fontSize(24).font('Helvetica').text(fact, {
+      align: 'center',
+    });
+
+    // Optional: Add a footer or additional info here
+    // doc.fontSize(12).text('Additional Information', { align: 'center' });
 
     doc.end();
   });
 }
+
 
 
 
