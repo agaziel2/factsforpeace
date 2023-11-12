@@ -172,8 +172,8 @@ function TranslationForm({ data, onSubmit }) {
         <tbody>
           {translations.map((item, index) => (
             <tr key={index}>
-              <td>{item.Theme}</td>
-              <td>{item.Fact}</td>
+              <td>{item.Themes}</td>
+              <td>{item.Facts}</td>
               <td>
                 <input
                   type="text"
