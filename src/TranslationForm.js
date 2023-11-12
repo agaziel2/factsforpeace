@@ -16,8 +16,8 @@ function TranslationForm({ data, onSubmit }) {
     updatedTranslations[index][field] = value;
     setTranslations(updatedTranslations);
   };
-
   const handleDownload = () => {
+    console.log("Downloading PDF");
     const link = document.createElement("a");
     link.href = `data:application/pdf;base64,${pdfData}`;
     link.download = `${pdfFileName}.pdf`;
@@ -35,6 +35,7 @@ function TranslationForm({ data, onSubmit }) {
     const response = await onSubmit(translatedData);
     if (response && response.data) {
       setPdfData(response.data); // Directly use response.data if it's not an array
+      console.log("Received PDF data:", response.data[0]);
       setPdfFileName(translatedData[0].theme);
       console.log("PDF Generated Successfully");
     }
