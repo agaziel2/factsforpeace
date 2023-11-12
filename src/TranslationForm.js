@@ -2,13 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 function TranslationForm({ data, onSubmit }) {
   const [translations, setTranslations] = useState([]);
-  const [pdfData, setPdfData] = useState(null);
-  const [pdfFileName, setPdfFileName] = useState('');
-
 
   useEffect(() => {
-    // Initialize translations with the original data
-    setTranslations(data.map(item => ({ ...item, translatedTheme: '', translatedFact: '' })));
+    setTranslations(data.map(item => ({ ...item, translatedTheme: '', translatedFact: '', pdfData: null, pdfFileName: '' })));
   }, [data]);
 
   const handleTranslationChange = (index, field, value) => {
@@ -16,8 +12,9 @@ function TranslationForm({ data, onSubmit }) {
     updatedTranslations[index][field] = value;
     setTranslations(updatedTranslations);
   };
-  const handleDownload = () => {
-    console.log("Downloading PDF");
+
+  const handleDownload = (pdfData, pdfFileName) => {
+    console.log("Downloading PDF:", pdfFileName);
     const link = document.createElement("a");
     link.href = `data:application/pdf;base64,${pdfData}`;
     link.download = `${pdfFileName}.pdf`;
@@ -26,28 +23,19 @@ function TranslationForm({ data, onSubmit }) {
     document.body.removeChild(link);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const translatedData = translations.map(item => ({
-      theme: item.translatedTheme,
-      fact: item.translatedFact
-    }));
-    const response = await onSubmit(translatedData);
-    if (response.data && response.data.data && response.data.data.length > 0) {
-      setPdfData(response.data.data[0]); // Accessing the first PDF
-      console.log("Received PDF data:", response.data.data[0]);
+  const handleSubmit = async (index, theme, fact) => {
+    const response = await onSubmit([{ theme, fact }]);
+    if (response && response.data && response.data.data && response.data.data.length > 0) {
+      const updatedTranslations = [...translations];
+      updatedTranslations[index].pdfData = response.data.data[0];
+      updatedTranslations[index].pdfFileName = theme;
+      setTranslations(updatedTranslations);
+      console.log(`PDF Generated for theme: ${theme}`);
     }
-    
-      setPdfFileName(translatedData[0].theme);
-      console.log("Received PDF filename:", translatedData[0].theme);
-      console.log("PDF Generated Successfully");
-    }
-  //};
-  
-  
+  };
+
   return (
     <div>
-    <form onSubmit={handleSubmit}>
       <table>
         <thead>
           <tr>
@@ -55,6 +43,7 @@ function TranslationForm({ data, onSubmit }) {
             <th>Fact</th>
             <th>Translated Theme</th>
             <th>Translated Fact</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -76,20 +65,18 @@ function TranslationForm({ data, onSubmit }) {
                   onChange={(e) => handleTranslationChange(index, 'translatedFact', e.target.value)}
                 />
               </td>
+              <td>
+                <button onClick={() => handleSubmit(index, item.translatedTheme, item.translatedFact)}>Generate PDF</button>
+                {item.pdfData && (
+                  <button onClick={() => handleDownload(item.pdfData, item.pdfFileName)}>Download PDF</button>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button type="submit">Generate Translated Posters</button>
-    </form>
-     {pdfData && (
-      <div>
-        <p>Generated PDF: {pdfFileName}</p>
-        <button onClick={handleDownload}>Download PDF</button>
-      </div>
-    )}
-  </div>
-);
+    </div>
+  );
 }
 
 export default TranslationForm;
